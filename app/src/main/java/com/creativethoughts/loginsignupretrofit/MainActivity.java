@@ -3,8 +3,11 @@ package com.creativethoughts.loginsignupretrofit;
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.app.Dialog;
+import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.preference.PreferenceManager;
+import android.text.TextUtils;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
@@ -17,6 +20,7 @@ import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 
+import okhttp3.ResponseBody;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
@@ -40,70 +44,75 @@ public class MainActivity extends AppCompatActivity {
         signUp = findViewById(R.id.btn_signup);
 
 
-
-
         signUp.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
 
                 String firstname = input_FirstName.getText().toString();
                 String lastname = input_LastName.getText().toString();
+
                 String email = input_Email.getText().toString();
-                String password = input_Password.getText().toString();
-                String mobile_no = input_MobileNo.getText().toString();
-
-
-                createSignUp(firstname, lastname, email, password, mobile_no);
+                String password = input_LastName.getText().toString();
+                String mobile = input_MobileNo.getText().toString();
+                //validate form
+                if (validateLogin(firstname, lastname, email, password, mobile)) {
+                    //do login
+                    doLogin(firstname, lastname, email, password, mobile);
+                }
             }
         });
 
-
     }
 
-    private void createSignUp(String firstname, String lastname, String email, String password, String mobile_number) {
-
-
-        HashMap<String, String> map = new HashMap<>();
-        map.put("first_name", firstname);
-        map.put("last_name", lastname);
-        map.put("email", email);
-        map.put("password", password);
-        map.put("mobile_number", mobile_number);
-
-        Map<String,String>map2 = new HashMap<>();
-        map2.put("Authorization","dfs#!df154$");
-        RetrofitConfig.getResponse(MainActivity.this,
-                new Dialog(this),
-                RetrofitConfig.getRetrofitApi().userRegister(map,map2),
-                new RetrofitConfig.WebCallback() {
-                    @Override
-                    public void onResponse(String jsonString) {
-                        Log.e("OnResponse", jsonString);
-                        Gson gson = new Gson();
-                        SignUpReponse signUpReponse = gson.fromJson(jsonString, SignUpReponse.class);
-
-                        if (signUpReponse.getSuccess().equals("true")) {
-                            Toast.makeText(MainActivity.this, signUpReponse.getMessage(), Toast.LENGTH_LONG).show();
-
-                            UserInfo userInfo = signUpReponse.getUserinfo();
-
-                            String firstName = userInfo.getFirstName();
-
-                            Toast.makeText(MainActivity.this, ""+firstName, Toast.LENGTH_SHORT).show();
-
-                        } else {
-                            Toast.makeText(MainActivity.this, signUpReponse.getMessage(), Toast.LENGTH_LONG).show();
-
-                        }
-
-                    }
-
-                    @Override
-                    public void onFailure(String message) {
-                        Toast.makeText(MainActivity.this, message, Toast.LENGTH_LONG).show();
-
-                    }
-                });
+    private boolean validateLogin(String firstname, String lastname, String email, String password, String mobile) {
+        if (TextUtils.isEmpty(firstname)) {
+            input_FirstName.setError("firstName required");
+            return false;
+        }
+        if (TextUtils.isEmpty(lastname)) {
+            input_LastName.setError("lastName required");
+            return false;
+        }
+        if (TextUtils.isEmpty(lastname)) {
+            input_Email.setError("Email required");
+            return false;
+        }
+        if (TextUtils.isEmpty(lastname)) {
+            input_Password.setError("Password required");
+            return false;
+        }
+        if (TextUtils.isEmpty(lastname)) {
+            input_LastName.setError("lastName required");
+            return false;
+        }
+        return true;
     }
 
+    private void doLogin(final String firstname, final String lastname, final String email, final String password, String mobileno) {
+        Call<SignUpReponse>call= RetrofitConfig.getRetrofitApi().createNewAcount(firstname,lastname,email,password,mobileno);
+
+        call.enqueue(new Callback<SignUpReponse>() {
+            @Override
+            public void onResponse(Call<SignUpReponse> call, Response<SignUpReponse> response) {
+                if (response.isSuccessful()){
+
+                    SignUpReponse signUpReponse = response.body();
+
+                    if (signUpReponse.getSuccess()==1){
+
+                        Intent second = new Intent(MainActivity.this,SecondActivity.class);
+                        startActivity(second);
+                    }
+                    else {
+                        Toast.makeText(MainActivity.this, "S]", Toast.LENGTH_SHORT).show();
+                    }
+                }
+            }
+
+            @Override
+            public void onFailure(Call<SignUpReponse> call, Throwable t) {
+
+            }
+        });
+    }
 }

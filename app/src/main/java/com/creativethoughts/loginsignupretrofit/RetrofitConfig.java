@@ -22,6 +22,8 @@ import retrofit2.converter.gson.GsonConverterFactory;
 import static com.creativethoughts.loginsignupretrofit.BaseUrl.BASE_URL;
 
 public class RetrofitConfig {
+    private static Retrofit retrofit = null;
+    private static ApiInterface loadInterface = null;
     public static Retrofit getRetrofitInstance() {
         HttpLoggingInterceptor logging = new HttpLoggingInterceptor();
         logging.setLevel(HttpLoggingInterceptor.Level.BODY);

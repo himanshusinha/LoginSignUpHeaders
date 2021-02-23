@@ -4,7 +4,7 @@ import com.google.gson.annotations.SerializedName;
 
 public class SignUpReponse {
     @SerializedName("success")
-    private String success;
+    private Integer success;
 
     @SerializedName("message")
     private String message;
@@ -13,8 +13,7 @@ public class SignUpReponse {
     private UserInfo userinfo;
 
 
-
-    public String getSuccess(){
+    public Integer getSuccess(){
         return success;
     }
 

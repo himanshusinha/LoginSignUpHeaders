@@ -53,7 +53,7 @@ public class UserInfo {
     private String longitude;
 
     @SerializedName("status")
-    private String status;
+    private String  status;
 
     public String getLoginType(){
         return loginType;
@@ -119,7 +119,7 @@ public class UserInfo {
         return longitude;
     }
 
-    public String getStatus(){
+    public String  getStatus(){
         return status;
     }
 }
